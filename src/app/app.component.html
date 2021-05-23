@@ -1,4 +1,12 @@
-<hello name="{{ name }}"></hello>
-<p>
-  Start editing to see some magic happen :)
-</p>
+<hello name="Candidates"></hello>
+<input type = "checkbox" [(ngModel)] = "checkbox" data-md-icheck (change) = "toggleVisibilityMale($event)"/>Male
+<span *ngIf="!markedFemale and !markedMale">
+
+
+<input type = "checkbox">Female
+
+<input type = "text" placeholder = "Whom are you looking for">
+
+<tr *ngFor="let candidate of candidates">
+ 
+</tr>
