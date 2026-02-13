@@ -1,0 +1,183 @@
+<div class="kyc-app">
+  <header class="kyc-header">
+    <div class="header-content">
+      <div class="logo-section">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Video KYC Verification</h1>
+          <p class="subtitle">LLM-Powered Aadhaar Identity Verification</p>
+        </div>
+      </div>
+      <div class="header-badge" *ngIf="currentSession">
+        Session: {{ currentSession.sessionId }}
+      </div>
+    </div>
+  </header>
+
+  <!-- Step Indicator -->
+  <div class="step-indicator" *ngIf="currentSession">
+    <div class="step" [class.active]="currentStep >= 0" [class.completed]="currentStep > 0">
+      <div class="step-circle">1</div>
+      <span>Initiate</span>
+    </div>
+    <div class="step-line" [class.active]="currentStep >= 1"></div>
+    <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+      <div class="step-circle">2</div>
+      <span>Aadhaar</span>
+    </div>
+    <div class="step-line" [class.active]="currentStep >= 2"></div>
+    <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+      <div class="step-circle">3</div>
+      <span>Video KYC</span>
+    </div>
+    <div class="step-line" [class.active]="currentStep >= 3"></div>
+    <div class="step" [class.active]="currentStep >= 3">
+      <div class="step-circle">4</div>
+      <span>Result</span>
+    </div>
+  </div>
+
+  <main class="kyc-main">
+    <!-- Step 0: Session Initiation -->
+    <div class="initiation-form" *ngIf="currentStep === 0">
+      <div class="form-card">
+        <h2>Start New KYC Session</h2>
+        <p class="form-description">
+          Complete your identity verification using your Aadhaar card and a live video session.
+          Our AI-powered system ensures fast, secure, and compliant verification.
+        </p>
+
+        <div class="info-cards">
+          <div class="info-card">
+            <div class="info-icon doc-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            <h4>Document Scan</h4>
+            <p>AI-powered OCR extracts and validates Aadhaar details</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon video-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="23 7 16 12 23 17 23 7"/>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+              </svg>
+            </div>
+            <h4>Live Video</h4>
+            <p>Real-time face matching with liveness detection</p>
+          </div>
+          <div class="info-card">
+            <div class="info-icon ai-icon">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <h4>LLM Analysis</h4>
+            <p>Intelligent risk assessment powered by large language models</p>
+          </div>
+        </div>
+
+        <div class="form-fields">
+          <div class="form-group">
+            <label for="applicantName">Full Name (as on Aadhaar)</label>
+            <input
+              id="applicantName"
+              type="text"
+              [(ngModel)]="applicantName"
+              placeholder="Enter your full name"
+              class="form-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="aadhaarNumber">Aadhaar Number</label>
+            <input
+              id="aadhaarNumber"
+              type="text"
+              [(ngModel)]="aadhaarNumber"
+              placeholder="XXXX XXXX XXXX"
+              maxlength="14"
+              class="form-input"
+            />
+            <small class="field-hint">Enter your 12-digit Aadhaar number</small>
+          </div>
+
+          <div class="form-group">
+            <label>Verification Purpose</label>
+            <div class="radio-group">
+              <label class="radio-option" [class.selected]="purpose === 'account_opening'">
+                <input
+                  type="radio"
+                  name="purpose"
+                  value="account_opening"
+                  [(ngModel)]="purpose"
+                />
+                <span class="radio-label">
+                  <strong>Account Opening</strong>
+                  <small>New bank/financial account</small>
+                </span>
+              </label>
+              <label class="radio-option" [class.selected]="purpose === 'policy_verification'">
+                <input
+                  type="radio"
+                  name="purpose"
+                  value="policy_verification"
+                  [(ngModel)]="purpose"
+                />
+                <span class="radio-label">
+                  <strong>Policy Verification</strong>
+                  <small>Insurance policy KYC</small>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="error-message" *ngIf="errorMessage">
+            {{ errorMessage }}
+          </div>
+
+          <button class="btn-primary" (click)="startKyc()">
+            Begin Verification
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: Aadhar Upload -->
+    <app-aadhar-upload
+      *ngIf="currentStep === 1 && currentSession"
+      [session]="currentSession"
+      (verified)="onDocumentVerified()">
+    </app-aadhar-upload>
+
+    <!-- Step 2: Video Capture -->
+    <app-video-capture
+      *ngIf="currentStep === 2 && currentSession"
+      [session]="currentSession"
+      (completed)="onVideoComplete()">
+    </app-video-capture>
+
+    <!-- Step 3: KYC Result -->
+    <app-kyc-result
+      *ngIf="currentStep === 3 && currentSession"
+      [session]="currentSession"
+      (restart)="resetSession()">
+    </app-kyc-result>
+  </main>
+
+  <footer class="kyc-footer">
+    <p>Video KYC Utility &mdash; Powered by LLM-based Document Analysis | Compliant with RBI V-CIP Guidelines</p>
+  </footer>
+</div>
