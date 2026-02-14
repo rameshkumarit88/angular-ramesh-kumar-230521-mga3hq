@@ -1,12 +1,53 @@
 <hello name="Candidates"></hello>
-<input type = "checkbox" [(ngModel)] = "checkbox" data-md-icheck (change) = "toggleVisibilityMale($event)"/>Male
-<span *ngIf="!markedFemale and !markedMale">
+<input type="checkbox" [(ngModel)]="checkbox" (change)="toggleVisibilityMale($event)"/> Male
+<input type="checkbox" (change)="toggleVisibilityFemale($event)"/> Female
 
+<input type="text" placeholder="Whom are you looking for">
 
-<input type = "checkbox">Female
+<div *ngIf="!markedFemale && !markedMale">
+  <table>
+    <tr *ngFor="let candidate of candidates">
+      <td>{{ candidate.id }}</td>
+      <td>{{ candidate.first_name }}</td>
+      <td>{{ candidate.last_name }}</td>
+      <td>{{ candidate.email }}</td>
+      <td>{{ candidate.gender }}</td>
+    </tr>
+  </table>
+</div>
 
-<input type = "text" placeholder = "Whom are you looking for">
+<div *ngIf="markedMale && !markedFemale">
+  <table>
+    <tr *ngFor="let candidate of candidates">
+      <td *ngIf="candidate.gender === 'Male'">{{ candidate.id }}</td>
+      <td *ngIf="candidate.gender === 'Male'">{{ candidate.first_name }}</td>
+      <td *ngIf="candidate.gender === 'Male'">{{ candidate.last_name }}</td>
+      <td *ngIf="candidate.gender === 'Male'">{{ candidate.email }}</td>
+      <td *ngIf="candidate.gender === 'Male'">{{ candidate.gender }}</td>
+    </tr>
+  </table>
+</div>
 
-<tr *ngFor="let candidate of candidates">
- 
-</tr>
+<div *ngIf="markedFemale && !markedMale">
+  <table>
+    <tr *ngFor="let candidate of candidates">
+      <td *ngIf="candidate.gender === 'Female'">{{ candidate.id }}</td>
+      <td *ngIf="candidate.gender === 'Female'">{{ candidate.first_name }}</td>
+      <td *ngIf="candidate.gender === 'Female'">{{ candidate.last_name }}</td>
+      <td *ngIf="candidate.gender === 'Female'">{{ candidate.email }}</td>
+      <td *ngIf="candidate.gender === 'Female'">{{ candidate.gender }}</td>
+    </tr>
+  </table>
+</div>
+
+<div *ngIf="markedMale && markedFemale">
+  <table>
+    <tr *ngFor="let candidate of candidates">
+      <td>{{ candidate.id }}</td>
+      <td>{{ candidate.first_name }}</td>
+      <td>{{ candidate.last_name }}</td>
+      <td>{{ candidate.email }}</td>
+      <td>{{ candidate.gender }}</td>
+    </tr>
+  </table>
+</div>
