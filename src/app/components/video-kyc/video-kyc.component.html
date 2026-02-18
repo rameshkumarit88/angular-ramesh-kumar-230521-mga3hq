@@ -1,0 +1,58 @@
+<div class="video-kyc-container">
+  <h2>Step 2: Video KYC Verification</h2>
+  <p class="subtitle">Capture a live photo for face verification against your Aadhar card.</p>
+
+  <!-- Instructions -->
+  <div class="instructions" *ngIf="!cameraActive && !capturedImageUrl">
+    <h3>Instructions</h3>
+    <ul>
+      <li *ngFor="let instruction of instructions">{{ instruction }}</li>
+    </ul>
+    <button class="btn-primary" (click)="startCamera()">Start Camera</button>
+    <button class="btn-secondary" (click)="onGoBack()">Back to Aadhar Details</button>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-box" *ngIf="errorMessage">
+    <p>{{ errorMessage }}</p>
+    <button class="btn-secondary" (click)="startCamera()">Retry</button>
+  </div>
+
+  <!-- Camera View -->
+  <div class="camera-view" *ngIf="cameraActive">
+    <div class="video-wrapper">
+      <video #videoElement autoplay playsinline></video>
+      <div class="face-guide"></div>
+      <div class="countdown-overlay" *ngIf="countdown !== null">
+        <span class="countdown-number">{{ countdown }}</span>
+      </div>
+    </div>
+    <div class="camera-controls">
+      <button
+        class="btn-capture"
+        (click)="captureWithCountdown()"
+        [disabled]="isCapturing"
+      >
+        {{ isCapturing ? 'Capturing...' : 'Capture Photo' }}
+      </button>
+      <button class="btn-secondary" (click)="onGoBack()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Captured Photo Preview -->
+  <div class="capture-preview" *ngIf="capturedImageUrl && !cameraActive">
+    <h3>Captured Photo</h3>
+    <div class="preview-image-wrapper">
+      <img [src]="capturedImageUrl" alt="Captured KYC photo" />
+    </div>
+    <div class="preview-actions">
+      <button class="btn-primary" (click)="submitCapture()">
+        Proceed to Verification
+      </button>
+      <button class="btn-secondary" (click)="retakePhoto()">Retake Photo</button>
+    </div>
+  </div>
+
+  <!-- Hidden canvas for capture -->
+  <canvas #canvasElement style="display: none;"></canvas>
+</div>

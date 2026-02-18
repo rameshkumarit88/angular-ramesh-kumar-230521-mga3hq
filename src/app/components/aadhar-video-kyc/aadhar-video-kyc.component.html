@@ -1,0 +1,155 @@
+<div class="kyc-wrapper">
+  <div class="kyc-header">
+    <h1>Aadhar Video KYC Verification</h1>
+    <p>Complete identity verification using Aadhar card and live video capture.</p>
+  </div>
+
+  <!-- Progress Steps -->
+  <div class="progress-bar">
+    <div class="step" [class.active]="currentStep === 'aadhar'" [class.completed]="currentStep === 'video' || currentStep === 'result'">
+      <div class="step-circle">1</div>
+      <span class="step-label">Aadhar Details</span>
+    </div>
+    <div class="step-line" [class.completed]="currentStep === 'video' || currentStep === 'result'"></div>
+    <div class="step" [class.active]="currentStep === 'video'" [class.completed]="currentStep === 'result'">
+      <div class="step-circle">2</div>
+      <span class="step-label">Video KYC</span>
+    </div>
+    <div class="step-line" [class.completed]="currentStep === 'result'"></div>
+    <div class="step" [class.active]="currentStep === 'result'">
+      <div class="step-circle">3</div>
+      <span class="step-label">Verification</span>
+    </div>
+  </div>
+
+  <!-- Step Content -->
+  <div class="step-content">
+    <!-- Step 1: Aadhar Upload -->
+    <app-aadhar-upload
+      *ngIf="currentStep === 'aadhar'"
+      (aadharValidated)="onAadharValidated($event)"
+    ></app-aadhar-upload>
+
+    <!-- Step 2: Video KYC -->
+    <app-video-kyc
+      *ngIf="currentStep === 'video'"
+      (kycCaptured)="onKycCaptured($event)"
+      (goBack)="onGoBackToAadhar()"
+    ></app-video-kyc>
+
+    <!-- Step 3: Verification Results -->
+    <div class="result-container" *ngIf="currentStep === 'result'">
+      <!-- Processing State -->
+      <div class="processing" *ngIf="isProcessing">
+        <div class="spinner"></div>
+        <h3>Processing Verification</h3>
+        <p>Comparing Aadhar photo with live capture. Please wait...</p>
+      </div>
+
+      <!-- Results -->
+      <div class="results" *ngIf="!isProcessing && validationResult">
+        <div
+          class="result-banner"
+          [class.passed]="validationResult.overallStatus === 'passed'"
+          [class.failed]="validationResult.overallStatus === 'failed'"
+        >
+          <span class="result-icon" *ngIf="validationResult.overallStatus === 'passed'">&#10003;</span>
+          <span class="result-icon" *ngIf="validationResult.overallStatus === 'failed'">&#10007;</span>
+          <h2 *ngIf="validationResult.overallStatus === 'passed'">KYC Verification Passed</h2>
+          <h2 *ngIf="validationResult.overallStatus === 'failed'">KYC Verification Failed</h2>
+        </div>
+
+        <!-- Comparison Images -->
+        <div class="comparison-section">
+          <div class="comparison-card">
+            <h4>Aadhar Photo</h4>
+            <img *ngIf="aadharDetails?.imagePreviewUrl" [src]="aadharDetails.imagePreviewUrl" alt="Aadhar photo" />
+          </div>
+          <div class="comparison-card">
+            <h4>Live Capture</h4>
+            <img *ngIf="videoKycResult?.capturedImageUrl" [src]="videoKycResult.capturedImageUrl" alt="Live capture" />
+          </div>
+        </div>
+
+        <!-- Verification Details -->
+        <div class="details-section">
+          <h3>Verification Details</h3>
+          <table class="details-table">
+            <tr>
+              <td class="detail-label">Aadhar Number</td>
+              <td>{{ getMaskedAadhar() }}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Name</td>
+              <td>{{ aadharDetails?.name }}</td>
+            </tr>
+            <tr>
+              <td class="detail-label">Aadhar Validation</td>
+              <td>
+                <span class="badge" [class.badge-pass]="validationResult.aadharValid" [class.badge-fail]="!validationResult.aadharValid">
+                  {{ validationResult.aadharValid ? 'Valid' : 'Invalid' }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="detail-label">Video KYC</td>
+              <td>
+                <span class="badge" [class.badge-pass]="validationResult.videoKycComplete" [class.badge-fail]="!validationResult.videoKycComplete">
+                  {{ validationResult.videoKycComplete ? 'Complete' : 'Incomplete' }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="detail-label">Face Match Score</td>
+              <td>
+                <div class="score-bar-wrapper">
+                  <div class="score-bar">
+                    <div
+                      class="score-fill"
+                      [style.width.%]="validationResult.faceMatchScore"
+                      [class.score-pass]="validationResult.faceMatchPassed"
+                      [class.score-fail]="!validationResult.faceMatchPassed"
+                    ></div>
+                  </div>
+                  <span class="score-value">{{ validationResult.faceMatchScore }}%</span>
+                </div>
+                <span class="threshold-info">(Threshold: {{ threshold }}%)</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="detail-label">Face Match</td>
+              <td>
+                <span class="badge" [class.badge-pass]="validationResult.faceMatchPassed" [class.badge-fail]="!validationResult.faceMatchPassed">
+                  {{ validationResult.faceMatchPassed ? 'Matched' : 'Not Matched' }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="detail-label">Overall Status</td>
+              <td>
+                <span
+                  class="badge badge-large"
+                  [class.badge-pass]="validationResult.overallStatus === 'passed'"
+                  [class.badge-fail]="validationResult.overallStatus === 'failed'"
+                >
+                  {{ validationResult.overallStatus === 'passed' ? 'PASSED' : 'FAILED' }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="detail-label">Remarks</td>
+              <td>{{ validationResult.remarks }}</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Actions -->
+        <div class="result-actions">
+          <button class="btn-primary" (click)="resetProcess()">
+            Start New Verification
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

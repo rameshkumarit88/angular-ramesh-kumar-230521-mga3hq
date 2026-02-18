@@ -1,0 +1,149 @@
+.aadhar-upload-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+h2 {
+  color: #1a237e;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.required {
+  color: #e53935;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #1a237e;
+  box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+}
+
+.formatted-display {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #1b5e20;
+  font-weight: 500;
+}
+
+.error-message {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #e53935;
+}
+
+.upload-area {
+  position: relative;
+  border: 2px dashed #bbb;
+  border-radius: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.upload-area:hover {
+  border-color: #1a237e;
+  background-color: #f5f5ff;
+}
+
+.upload-placeholder .upload-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.upload-placeholder p {
+  margin: 4px 0;
+  color: #666;
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: #999;
+}
+
+.file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.image-preview {
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+.remove-btn {
+  background: #e53935;
+  color: #fff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.remove-btn:hover {
+  background: #c62828;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: #1a237e;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #0d1557;
+}
