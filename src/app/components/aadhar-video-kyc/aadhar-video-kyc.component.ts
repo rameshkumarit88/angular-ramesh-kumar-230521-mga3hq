@@ -4,6 +4,7 @@ import {
   VideoKycResult,
   KycValidationResult,
   KYC_FACE_MATCH_THRESHOLD,
+  KYC_LIVENESS_THRESHOLD,
 } from '../../models/aadhar.model';
 import { AadharValidationService } from '../../services/aadhar-validation.service';
 
@@ -18,7 +19,8 @@ export class AadharVideoKycComponent {
   videoKycResult: VideoKycResult | null = null;
   validationResult: KycValidationResult | null = null;
   isProcessing = false;
-  threshold = KYC_FACE_MATCH_THRESHOLD;
+  faceMatchThreshold = KYC_FACE_MATCH_THRESHOLD;
+  livenessThreshold = KYC_LIVENESS_THRESHOLD;
 
   constructor(private validationService: AadharValidationService) {}
 
@@ -40,11 +42,10 @@ export class AadharVideoKycComponent {
     this.isProcessing = true;
     this.currentStep = 'result';
 
-    // Simulate processing delay for face matching
     setTimeout(() => {
       this.validationResult = this.validationService.performFaceMatch(
-        this.aadharDetails,
-        this.videoKycResult
+        this.aadharDetails!,
+        this.videoKycResult!
       );
       this.isProcessing = false;
     }, 2500);

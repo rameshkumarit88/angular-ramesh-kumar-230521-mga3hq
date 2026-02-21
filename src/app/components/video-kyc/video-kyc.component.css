@@ -18,6 +18,7 @@ h3 {
   margin-bottom: 24px;
 }
 
+/* Instructions */
 .instructions {
   background: #f5f5ff;
   border-radius: 8px;
@@ -46,6 +47,12 @@ h3 {
   font-weight: bold;
 }
 
+.instruction-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Error */
 .error-box {
   background: #fbe9e7;
   border: 1px solid #e53935;
@@ -60,6 +67,7 @@ h3 {
   margin-bottom: 12px;
 }
 
+/* Camera View */
 .camera-view {
   text-align: center;
 }
@@ -70,7 +78,7 @@ h3 {
   border-radius: 12px;
   overflow: hidden;
   background: #000;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .video-wrapper video {
@@ -80,16 +88,15 @@ h3 {
   border-radius: 12px;
 }
 
-.face-guide {
+/* Detection Overlay Canvas */
+.detection-overlay {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 200px;
-  height: 260px;
-  border: 3px dashed rgba(255, 255, 255, 0.6);
-  border-radius: 50%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
+  border-radius: 12px;
 }
 
 .countdown-overlay {
@@ -102,6 +109,7 @@ h3 {
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.4);
+  z-index: 2;
 }
 
 .countdown-number {
@@ -111,11 +119,284 @@ h3 {
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* Detection Status Panel */
+.detection-status-panel {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.active {
+  background: #4caf50;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
+  animation: pulse-dot 1.5s infinite;
+}
+
+.status-dot.inactive {
+  background: #e53935;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.status-label {
+  font-size: 13px;
+  color: #444;
+  font-weight: 500;
+}
+
+.confidence-label {
+  color: #1a237e;
+  font-weight: 600;
+}
+
+.quality-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.quality-good {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.quality-fair {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.quality-poor {
+  background: #fbe9e7;
+  color: #c62828;
+}
+
+.guidance-message {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #e65100;
+  font-weight: 500;
+  padding: 6px 10px;
+  background: #fff3e0;
+  border-radius: 4px;
+}
+
+.guidance-success {
+  color: #1b5e20;
+  background: #e8f5e9;
+}
+
+/* Liveness Challenge Panel */
+.challenge-panel {
+  background: #f5f5ff;
+  border: 1px solid #c5cae9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.challenge-panel h3 {
+  color: #1a237e;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.challenge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.challenge-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s;
+}
+
+.challenge-item.active {
+  border-color: #1a237e;
+  background: #e8eaf6;
+  box-shadow: 0 1px 4px rgba(26, 35, 126, 0.15);
+}
+
+.challenge-item.completed {
+  border-color: #4caf50;
+  background: #e8f5e9;
+}
+
+.challenge-item.failed {
+  border-color: #e53935;
+  background: #fbe9e7;
+}
+
+.challenge-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  background: #e0e0e0;
+  color: #666;
+}
+
+.challenge-item.active .challenge-icon {
+  background: #1a237e;
+  color: #fff;
+}
+
+.challenge-item.completed .challenge-icon {
+  background: #4caf50;
+  color: #fff;
+}
+
+.challenge-item.failed .challenge-icon {
+  background: #e53935;
+  color: #fff;
+}
+
+.challenge-text {
+  flex: 1;
+}
+
+.challenge-instruction {
+  font-size: 13px;
+  color: #444;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.challenge-progress-bar {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.challenge-progress-fill {
+  height: 100%;
+  background: #1a237e;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Current Challenge Highlight */
+.current-challenge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #1a237e, #283593);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  animation: challenge-glow 2s infinite;
+}
+
+@keyframes challenge-glow {
+  0%, 100% { box-shadow: 0 2px 8px rgba(26, 35, 126, 0.3); }
+  50% { box-shadow: 0 2px 16px rgba(26, 35, 126, 0.6); }
+}
+
+.pulse-ring {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  flex-shrink: 0;
+  animation: pulse-ring-anim 1.2s infinite;
+}
+
+@keyframes pulse-ring-anim {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Challenges Result */
+.challenges-result {
+  text-align: center;
+  padding: 12px;
+}
+
+.liveness-score-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.liveness-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.liveness-value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.score-high {
+  color: #1b5e20;
+}
+
+.score-low {
+  color: #c62828;
+}
+
+.challenges-summary {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}
+
+/* Camera Controls */
 .camera-controls {
   display: flex;
   gap: 12px;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .btn-capture {
@@ -137,8 +418,10 @@ h3 {
 .btn-capture:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  background: #9e9e9e;
 }
 
+/* Capture Preview */
 .capture-preview {
   text-align: center;
 }
@@ -154,12 +437,50 @@ h3 {
   border: 2px solid #1a237e;
 }
 
+/* Capture Summary */
+.capture-summary {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.summary-label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.text-pass {
+  color: #1b5e20;
+}
+
+.text-fail {
+  color: #c62828;
+}
+
 .preview-actions {
   display: flex;
   gap: 12px;
   justify-content: center;
 }
 
+/* Buttons */
 .btn-primary {
   padding: 12px 32px;
   background: #1a237e;
@@ -190,4 +511,22 @@ h3 {
 
 .btn-secondary:hover {
   background: #f5f5ff;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .status-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .capture-summary {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .instruction-actions {
+    flex-direction: column;
+  }
 }

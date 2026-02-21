@@ -1,50 +1,174 @@
 <div class="video-kyc-container">
-  <h2>Step 2: Video KYC Verification</h2>
-  <p class="subtitle">Capture a live photo for face verification against your Aadhar card.</p>
+  <h2>Step 2: Video KYC - Real-Time Face Detection</h2>
+  <p class="subtitle">
+    Your face will be detected in real-time. Complete liveness challenges to verify identity.
+  </p>
 
-  <!-- Instructions -->
-  <div class="instructions" *ngIf="!cameraActive && !capturedImageUrl">
+  <!-- Instructions (idle state) -->
+  <div class="instructions" *ngIf="state === 'idle'">
     <h3>Instructions</h3>
     <ul>
       <li *ngFor="let instruction of instructions">{{ instruction }}</li>
     </ul>
-    <button class="btn-primary" (click)="startCamera()">Start Camera</button>
-    <button class="btn-secondary" (click)="onGoBack()">Back to Aadhar Details</button>
+    <div class="instruction-actions">
+      <button class="btn-primary" (click)="startCamera()">Start Camera</button>
+      <button class="btn-secondary" (click)="onGoBack()">Back to Aadhar Details</button>
+    </div>
   </div>
 
   <!-- Error Message -->
-  <div class="error-box" *ngIf="errorMessage">
+  <div class="error-box" *ngIf="state === 'error'">
     <p>{{ errorMessage }}</p>
     <button class="btn-secondary" (click)="startCamera()">Retry</button>
   </div>
 
-  <!-- Camera View -->
-  <div class="camera-view" *ngIf="cameraActive">
+  <!-- Camera View with Detection Overlay (detecting + challenges states) -->
+  <div class="camera-view" *ngIf="state === 'detecting' || state === 'challenges'">
     <div class="video-wrapper">
       <video #videoElement autoplay playsinline></video>
-      <div class="face-guide"></div>
+      <canvas #overlayCanvas class="detection-overlay"></canvas>
       <div class="countdown-overlay" *ngIf="countdown !== null">
         <span class="countdown-number">{{ countdown }}</span>
       </div>
     </div>
+
+    <!-- Face Detection Status Panel -->
+    <div class="detection-status-panel">
+      <div class="status-row">
+        <div class="status-item">
+          <span class="status-dot" [class.active]="faceDetected" [class.inactive]="!faceDetected"></span>
+          <span class="status-label">{{ faceDetected ? 'Face Detected' : 'No Face Detected' }}</span>
+        </div>
+        <div class="status-item" *ngIf="faceDetected">
+          <span class="status-label confidence-label">
+            Confidence: {{ (faceConfidence * 100) | number:'1.0-0' }}%
+          </span>
+        </div>
+        <div class="status-item" *ngIf="faceQuality">
+          <span
+            class="quality-badge"
+            [class.quality-good]="faceQuality.overallQuality === 'good'"
+            [class.quality-fair]="faceQuality.overallQuality === 'fair'"
+            [class.quality-poor]="faceQuality.overallQuality === 'poor'"
+          >
+            {{ faceQuality.overallQuality | uppercase }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Guidance Message -->
+      <div class="guidance-message" *ngIf="faceQuality && faceQuality.overallQuality !== 'good'">
+        {{ faceQuality.guidance }}
+      </div>
+      <div class="guidance-message guidance-success" *ngIf="faceQuality?.overallQuality === 'good' && state === 'detecting'">
+        Face position is good. Preparing liveness check...
+      </div>
+    </div>
+
+    <!-- Liveness Challenge Panel -->
+    <div class="challenge-panel" *ngIf="state === 'challenges'">
+      <h3>Liveness Verification</h3>
+
+      <!-- Challenge List -->
+      <div class="challenge-list">
+        <div
+          class="challenge-item"
+          *ngFor="let challenge of challenges; let i = index"
+          [class.active]="i === currentChallengeIndex && !allChallengesComplete"
+          [class.completed]="challenge.completed"
+          [class.failed]="i < currentChallengeIndex && !challenge.completed"
+        >
+          <div class="challenge-icon">
+            <span *ngIf="challenge.completed">&#10003;</span>
+            <span *ngIf="i < currentChallengeIndex && !challenge.completed">&#10007;</span>
+            <span *ngIf="i >= currentChallengeIndex || (i === currentChallengeIndex && !allChallengesComplete)">
+              {{ i + 1 }}
+            </span>
+          </div>
+          <div class="challenge-text">
+            <span class="challenge-instruction">{{ challenge.instruction }}</span>
+            <div class="challenge-progress-bar" *ngIf="i === currentChallengeIndex && !allChallengesComplete">
+              <div class="challenge-progress-fill" [style.width.%]="challengeProgress"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Challenge Instruction (highlighted) -->
+      <div class="current-challenge" *ngIf="currentChallenge && !allChallengesComplete">
+        <div class="pulse-ring"></div>
+        <span>{{ currentChallenge.instruction }}</span>
+      </div>
+
+      <!-- All Challenges Complete -->
+      <div class="challenges-result" *ngIf="allChallengesComplete">
+        <div class="liveness-score-display">
+          <span class="liveness-label">Liveness Score:</span>
+          <span
+            class="liveness-value"
+            [class.score-high]="livenessScore >= 60"
+            [class.score-low]="livenessScore < 60"
+          >
+            {{ livenessScore }}%
+          </span>
+        </div>
+        <p class="challenges-summary">
+          {{ completedChallengeCount }} of {{ challenges.length }} challenges passed
+        </p>
+      </div>
+    </div>
+
+    <!-- Camera Controls -->
     <div class="camera-controls">
       <button
         class="btn-capture"
-        (click)="captureWithCountdown()"
-        [disabled]="isCapturing"
+        (click)="allChallengesComplete ? captureNow() : captureWithCountdown()"
+        [disabled]="isCapturing || (!allChallengesComplete && state === 'challenges')"
       >
-        {{ isCapturing ? 'Capturing...' : 'Capture Photo' }}
+        <span *ngIf="isCapturing">Capturing...</span>
+        <span *ngIf="!isCapturing && allChallengesComplete">Capture Photo</span>
+        <span *ngIf="!isCapturing && !allChallengesComplete && state === 'challenges'">
+          Complete Challenges First
+        </span>
+        <span *ngIf="!isCapturing && state === 'detecting'">Waiting for Face...</span>
       </button>
       <button class="btn-secondary" (click)="onGoBack()">Cancel</button>
     </div>
   </div>
 
   <!-- Captured Photo Preview -->
-  <div class="capture-preview" *ngIf="capturedImageUrl && !cameraActive">
+  <div class="capture-preview" *ngIf="state === 'captured'">
     <h3>Captured Photo</h3>
     <div class="preview-image-wrapper">
       <img [src]="capturedImageUrl" alt="Captured KYC photo" />
     </div>
+
+    <!-- Capture Summary -->
+    <div class="capture-summary">
+      <div class="summary-item">
+        <span class="summary-label">Face Detected:</span>
+        <span class="summary-value" [class.text-pass]="faceDetected" [class.text-fail]="!faceDetected">
+          {{ faceDetected ? 'Yes' : 'No' }}
+        </span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Liveness Score:</span>
+        <span
+          class="summary-value"
+          [class.text-pass]="livenessScore >= 60"
+          [class.text-fail]="livenessScore < 60"
+        >
+          {{ livenessScore }}%
+        </span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Challenges:</span>
+        <span class="summary-value">
+          {{ completedChallengeCount }}/{{ challenges.length }} passed
+        </span>
+      </div>
+    </div>
+
     <div class="preview-actions">
       <button class="btn-primary" (click)="submitCapture()">
         Proceed to Verification
@@ -54,5 +178,5 @@
   </div>
 
   <!-- Hidden canvas for capture -->
-  <canvas #canvasElement style="display: none;"></canvas>
+  <canvas #captureCanvas style="display: none;"></canvas>
 </div>

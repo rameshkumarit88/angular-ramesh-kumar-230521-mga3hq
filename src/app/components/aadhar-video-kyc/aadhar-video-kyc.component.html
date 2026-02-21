@@ -1,7 +1,7 @@
 <div class="kyc-wrapper">
   <div class="kyc-header">
     <h1>Aadhar Video KYC Verification</h1>
-    <p>Complete identity verification using Aadhar card and live video capture.</p>
+    <p>Complete identity verification using Aadhar card, real-time face detection, and liveness verification.</p>
   </div>
 
   <!-- Progress Steps -->
@@ -13,7 +13,7 @@
     <div class="step-line" [class.completed]="currentStep === 'video' || currentStep === 'result'"></div>
     <div class="step" [class.active]="currentStep === 'video'" [class.completed]="currentStep === 'result'">
       <div class="step-circle">2</div>
-      <span class="step-label">Video KYC</span>
+      <span class="step-label">Face Detection &amp; KYC</span>
     </div>
     <div class="step-line" [class.completed]="currentStep === 'result'"></div>
     <div class="step" [class.active]="currentStep === 'result'">
@@ -30,7 +30,7 @@
       (aadharValidated)="onAadharValidated($event)"
     ></app-aadhar-upload>
 
-    <!-- Step 2: Video KYC -->
+    <!-- Step 2: Video KYC with Face Detection -->
     <app-video-kyc
       *ngIf="currentStep === 'video'"
       (kycCaptured)="onKycCaptured($event)"
@@ -43,7 +43,7 @@
       <div class="processing" *ngIf="isProcessing">
         <div class="spinner"></div>
         <h3>Processing Verification</h3>
-        <p>Comparing Aadhar photo with live capture. Please wait...</p>
+        <p>Analyzing face detection data, liveness results, and comparing with Aadhar photo...</p>
       </div>
 
       <!-- Results -->
@@ -99,6 +99,61 @@
                 </span>
               </td>
             </tr>
+          </table>
+        </div>
+
+        <!-- Face Detection Details -->
+        <div class="details-section">
+          <h3>Face Detection &amp; Liveness</h3>
+          <table class="details-table">
+            <tr>
+              <td class="detail-label">Face Detection</td>
+              <td>
+                <span class="badge" [class.badge-pass]="validationResult.faceDetectionConfidence > 0" [class.badge-fail]="validationResult.faceDetectionConfidence === 0">
+                  {{ validationResult.faceDetectionConfidence > 0 ? 'Detected (' + validationResult.faceDetectionConfidence + '% confidence)' : 'Not Detected' }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="detail-label">Liveness Score</td>
+              <td>
+                <div class="score-bar-wrapper">
+                  <div class="score-bar">
+                    <div
+                      class="score-fill"
+                      [style.width.%]="validationResult.livenessScore"
+                      [class.score-pass]="validationResult.livenessPassed"
+                      [class.score-fail]="!validationResult.livenessPassed"
+                    ></div>
+                  </div>
+                  <span class="score-value">{{ validationResult.livenessScore }}%</span>
+                </div>
+                <span class="threshold-info">(Threshold: {{ livenessThreshold }}%)</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="detail-label">Liveness Check</td>
+              <td>
+                <span class="badge" [class.badge-pass]="validationResult.livenessPassed" [class.badge-fail]="!validationResult.livenessPassed">
+                  {{ validationResult.livenessPassed ? 'Passed' : 'Failed' }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td class="detail-label">Challenges</td>
+              <td>
+                <span class="badge" [class.badge-pass]="validationResult.challengesCompleted === validationResult.challengesTotal" [class.badge-fail]="validationResult.challengesCompleted < validationResult.challengesTotal">
+                  {{ validationResult.challengesCompleted }}/{{ validationResult.challengesTotal }} Passed
+                </span>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Face Match Details -->
+        <div class="details-section">
+          <h3>Face Match Results</h3>
+          <table class="details-table">
             <tr>
               <td class="detail-label">Face Match Score</td>
               <td>
@@ -113,7 +168,7 @@
                   </div>
                   <span class="score-value">{{ validationResult.faceMatchScore }}%</span>
                 </div>
-                <span class="threshold-info">(Threshold: {{ threshold }}%)</span>
+                <span class="threshold-info">(Threshold: {{ faceMatchThreshold }}%)</span>
               </td>
             </tr>
             <tr>
