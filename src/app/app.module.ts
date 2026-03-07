@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { HelloComponent } from './hello.component';
+import { FaceMatchComponent } from './face-match.component';
+import { FaceMatchService } from './face-match.service';
 import { RouterModule } from '@angular/router';
 
 @NgModule({
@@ -12,7 +14,8 @@ import { RouterModule } from '@angular/router';
     FormsModule,
     RouterModule.forRoot([{ path: '', component: AppComponent }])
   ],
-  declarations: [AppComponent, HelloComponent],
+  declarations: [AppComponent, HelloComponent, FaceMatchComponent],
+  providers: [FaceMatchService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

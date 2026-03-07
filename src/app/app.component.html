@@ -1,12 +1,15 @@
 <hello name="Candidates"></hello>
-<input type = "checkbox" [(ngModel)] = "checkbox" data-md-icheck (change) = "toggleVisibilityMale($event)"/>Male
-<span *ngIf="!markedFemale and !markedMale">
+<input type="checkbox" [(ngModel)]="checkbox" data-md-icheck (change)="toggleVisibilityMale($event)"/>Male
+<input type="checkbox" [(ngModel)]="markedFemale" (change)="toggleVisibilityFemale($event)"/>Female
 
+<input type="text" placeholder="Whom are you looking for">
 
-<input type = "checkbox">Female
+<table>
+  <tr *ngFor="let candidate of candidates">
+    <td *ngIf="(!markedMale && !markedFemale) || (markedMale && candidate.gender === 'Male') || (markedFemale && candidate.gender === 'Female')">
+      {{candidate.first_name}} {{candidate.last_name}} - {{candidate.email}} ({{candidate.gender}})
+    </td>
+  </tr>
+</table>
 
-<input type = "text" placeholder = "Whom are you looking for">
-
-<tr *ngFor="let candidate of candidates">
- 
-</tr>
+<app-face-match></app-face-match>
